@@ -5,11 +5,31 @@ import Loading from '../../components/student/Loading';
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
-  const { currency, calculateCourseDuration } = useContext(AppContext);
+  const { currency, calculateCourseDuration,backenUrl,isEducator,getToken } = useContext(AppContext);
 
+
+  const fetchDashboardData=async()=>{
+    try{
+      const token=await getToken()
+      const {data}=await axois.get(backendUrl + '/api/eductor/dashboard',{headers:{
+        Authorization :`Bearer ${token}`
+      }})
+      if(data.success){
+        setDashboardData(data.dashboardData)
+      }else{
+        toast.error(data.message)
+      }
+    }
+    catch(error){
+       toast.error(error.message)
+    }
+  }
   useEffect(() => {
-    setDashboardData(dummyDashboardData);
-  }, []);
+  if(isEducator){
+    fetchDashboardData()
+  }
+    
+  }, [isEducator]);
 
   if (!dashboardData) return <Loading />;
 

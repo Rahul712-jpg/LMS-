@@ -6,10 +6,31 @@ import Loading from '../../components/student/Loading';
 const StudentEnrolled = () => {
   const [enrolledStudents, setEnrolledStudents] = useState(null);
   const { calculateCourseDuration } = useContext(AppContext);
+  const [backendUrl,getToken,isEducator]=useContext(AppContext);
+
+  const fecthEnrolledCourses=async()=>{
+    try{
+      const token=await getToken()
+      const {data}=await axois.get(backendUrl + '/api/eductor/enrolled-students',{headers:{
+        Authorization :`Bearer ${token}`
+      }})
+      if(data.success){
+        setEnrolledStudents(data.enrolledStudents.reverse())
+      }else{
+        toast.error(data.message)
+      }
+    }
+    catch(error){
+       toast.error(error.message)
+    }
+  }
+
 
   useEffect(() => {
-    setEnrolledStudents(dummyStudentEnrolled);
-  }, []);
+    if(isEducator){
+      fecthEnrolledCourses()
+    }
+  }, [isEducator]);
 
   return enrolledStudents ? (
     <div className='min-h-screen flex flex-col items-start p-4 md:p-8'>

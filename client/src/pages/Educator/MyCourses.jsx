@@ -3,12 +3,27 @@ import { AppContext } from '../../context/AppContext';
 import Loading from '../../components/student/Loading';
 
 const MyCourses = () => {
-  const { currency, allCourses } = useContext(AppContext);
+  const { currency, backendUrl,isEducator,getToken} = useContext(AppContext);
   const [courses, setCourses] = useState(null);
 
+  const fetchEducatorCourses=async()=>{
+    try{
+     const token=await getToken()
+     const {data}=await axois.get(backenUrl + '/api/educator/courses',{headers:{
+      Authorization:`Bearer ${token}`
+     }})
+     data.success && setCourses(data.courses)
+    }
+    catch(error){
+       toast.error(error.message)
+    }
+  }
+
   useEffect(() => {
-    setCourses(allCourses);
-  }, [allCourses]);
+    if(isEducator){
+    fetchEducatorCourses()
+  }
+  }, [isEducator]);
 
   return courses ? (
     <div className='h-screen flex flex-col items-start md:p-8 p-4'>
