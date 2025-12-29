@@ -30,7 +30,7 @@ app.use(cors())
 
 // // route
 
-app.get('/',(req,res)=>res.send("API WORKING"))
+app.get('/',(req,res)=>res.send("API IS WORKING"))
 
 // app.post('/clerk',express.json(),clerkWebhooks)
 
