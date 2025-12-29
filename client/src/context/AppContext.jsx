@@ -28,7 +28,7 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchAllCourses = async () => {
     try{
-      const {data}=await axios.get(backendUrl + '/api/courses');
+      const {data}=await axios.get(backendUrl +'/api/courses');
       if(data.success){
         setAllCourses(data.courses);
       }else{
@@ -135,6 +135,10 @@ export const AppContextProvider = ({ children }) => {
       fetchUserData();
       fetchUserEnrolledCourses();
   }},[user])
+
+  const logtoken=async()=>{
+    console.log(await getToken())
+  }
 
   const value = {
     currency,

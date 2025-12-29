@@ -1,6 +1,7 @@
 
 import mongoose from "mongoose";
-import course from "./course";
+// import course from '../models/course.js'
+import Webhooks from '../controllers/webhooks.js'
 
 const purchaseSchema=new mongoose.Schema({
     courseId:{type:mongoose.Schema.Types.ObjectId,ref:'Course',required:true},

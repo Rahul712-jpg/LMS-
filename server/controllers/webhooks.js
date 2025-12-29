@@ -1,10 +1,10 @@
 import { Webhook } from "svix";
 import Course from "../models/Course";
-import Purchase from "../models/Purchase";
+// import Purchase from "../models/Purchase";
 
 
 
-import User from "../models/User";
+// import User from "../models/User"
 import Stripe from "stripe";
 
 // API CONTORLLER funtion to mage clerk user with database
@@ -125,7 +125,7 @@ const stripeWebhooks=async(request,response)=>{
 
 }
      
-     
+export default webhooks
      
      
      

@@ -3,7 +3,7 @@ import { eduactorDashboardData, updateRoleToEducator } from "../controllers/educ
 import { protectEducator } from "../middlewares/authMiddelware.js";
 import { get } from "mongoose";
 import {addCourse, getEducatorCourses,getEnrolledStudents} from "../controllers/educatorController.js"
-import upload from "../utils/multer.js";
+import upload from "../configs/multer.js";
 
 const educatorRouter=express.Router();
 

@@ -1,6 +1,6 @@
 import express from 'express';
-import { addUserRating, getUserCourseProgress, getUserData,purchaseCourse,userEnrolledCourses } from '../controllers/userController';
-import { updateUserCourseProgress } from '../controllers/userController.js';
+// import { addUserRating, getUserCourseProgress, getUserData,purchaseCourse,userEnrolledCourses } from '../controllers/userController';
+// import { updateUserCourseProgress } from '../controllers/userController.js';
 import { use } from 'react';
 
 const userRouter=express.Router();

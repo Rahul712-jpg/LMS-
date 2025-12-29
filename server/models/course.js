@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IsomorphicFetchHttpLibrary } from "svix/dist/openapi";
+// import { IsomorphicFetchHttpLibrary } from "svix/dist/openapi";
 
 
 const lectureSchema=new mongoose.Schema({
