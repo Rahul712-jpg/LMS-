@@ -1,6 +1,6 @@
 import express from "express";
-// import course from "../models/course";
-// import { getCourseId } from "../controllers/courseController";
+import course from "../models/course.js";
+import  {getCourseId,getAllCourses} from "../controllers/courseController.js";
 
 
 const courseRouter=express.Router();

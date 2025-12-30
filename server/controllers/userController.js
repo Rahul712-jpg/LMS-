@@ -1,9 +1,9 @@
-import Course from "../models/Course";
-import Purchase from "../models/Purchase"
+import course from "../models/course.js";
+import Purchase from "../models/purchase.js"
 import { EventTypeImportOpenApiIn } from "svix";
-import User from "../models/User";
+import User from "../models/User.js";
 import Stripe from "stripe";
-import course from "../models/Course";
+
 
 export const getUserData=async(req,res)=>{
     try{
@@ -82,7 +82,7 @@ export const purchaseCourse=async(req,res)=>{
 
 // 
 
-const updateUserCourseProgress=async(req,res)=>{
+ export const updateUserCourseProgress=async(req,res)=>{
     try{
         const userId=req.auth.userId;
         const {courseId,lectureId}=req.body;
@@ -160,3 +160,4 @@ export const addUserRating=async(req,res)=>{
         res.json({success:false,message:error.message})
     }
 }
+

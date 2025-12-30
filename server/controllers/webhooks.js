@@ -1,10 +1,10 @@
 import { Webhook } from "svix";
 import Stripe from "stripe";
-import Course from "../models/Course.js";
+import course from "../models/course.js";
 import User from "../models/User.js";
-import Purchase from "../models/Purchase.js";
+import Purchase from "../models/purchase.js";
 
-const clerkWebhooks = async (req, res) => {
+export const clerkWebhooks = async (req, res) => {
   try {
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
@@ -25,6 +25,7 @@ const clerkWebhooks = async (req, res) => {
           imageUrl: data.image_url,
         };
         await User.create(userData);
+        res.json({})
         break;
       }
 
@@ -35,11 +36,13 @@ const clerkWebhooks = async (req, res) => {
           imageUrl: data.image_url,
         };
         await User.findByIdAndUpdate(data.id, userData);
+        res.json({})
         break;
       }
 
       case "user.deleted": {
         await User.findByIdAndDelete(data.id);
+        res.json({})
         break;
       }
 
@@ -49,25 +52,25 @@ const clerkWebhooks = async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
-};
+}
 
-const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+// const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const stripeWebhooks = async (request, response) => {
-  const sig = request.headers["stripe-signature"];
-  let event;
+// export const stripeWebhooks = async (request, response) => {
+//   const sig = request.headers["stripe-signature"];
+//   let event;
 
-  try {
-    event = stripeInstance.webhooks.constructEvent(
-      request.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
-  } catch (error) {
-    return response.status(400).send(`Webhook error: ${error.message}`);
-  }
+//   try {
+//     event = stripeInstance.webhooks.constructEvent(
+//       request.body,
+//       sig,
+//       process.env.STRIPE_WEBHOOK_SECRET
+//     );
+//   } catch (error) {
+//     return response.status(400).send(`Webhook error: ${error.message}`);
+//   }
 
 //   switch (event.type) {
 //     case "payment_intent.succeeded": {
@@ -115,6 +118,5 @@ const stripeWebhooks = async (request, response) => {
 
 //   response.json({ received: true });
 // };
+// }
 
-// export { clerkWebhooks, stripeWebhooks 
-}

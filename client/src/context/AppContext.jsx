@@ -10,6 +10,8 @@ export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
   const backendUrl=import.meta.env.VITE_BACKEND_URL ;
+  console.log("BACKEND URL 👉", import.meta.env.VITE_BACKEND_URL);
+
 
   const currency = import.meta.env.VITE_CURRENCY || '₹';
 
@@ -27,8 +29,9 @@ export const AppContextProvider = ({ children }) => {
 
 
   const fetchAllCourses = async () => {
+    
     try{
-      const {data}=await axios.get(backendUrl +'/api/courses');
+      const {data}=await axios.get(backendUrl +'/api/course/all');
       if(data.success){
         setAllCourses(data.courses);
       }else{
@@ -36,7 +39,7 @@ export const AppContextProvider = ({ children }) => {
       }
 
     }catch(error){
-      toast.error(error.meassage);
+      toast.error(error.message);
 
     }
   };
@@ -48,9 +51,9 @@ export const AppContextProvider = ({ children }) => {
     }
     try{
       const token=await getToken();
-      const {data}=await axios.get(backendUrl + '/api/user/data',{headers:{
-        Authorization:`Bearer ${token}`
-      }})
+      // const {data}=await axios.get(backendUrl + '/api/user/data',{headers:{
+      //   Authorization:`Bearer ${token}`
+      // }})
       if(data.success){
         setuserData(data.user);
       }else{
@@ -105,11 +108,11 @@ export const AppContextProvider = ({ children }) => {
 
     try{
        const token = await getToken();
-    const {data}=await axios.get(backendUrl + '/api/user/enrolled-courses',{
-      headers:{
-        Authorization:`Bearer ${token}`
-      }
-    })
+    // const {data}=await axios.get(backendUrl + '/api/user/enrolled-courses',{
+    //   headers:{
+    //     Authorization:`Bearer ${token}`
+    //   }
+    // })
     if(data.success){
       setEnrolledCourses(data.enrolledCourses.reverse());
     }else{
@@ -123,11 +126,7 @@ export const AppContextProvider = ({ children }) => {
 
 
 
-  useEffect(() => {
-    fetchAllCourses();
-    
-  }, []);
-
+ 
   
 
   useEffect(() => {
@@ -136,9 +135,17 @@ export const AppContextProvider = ({ children }) => {
       fetchUserEnrolledCourses();
   }},[user])
 
-  const logtoken=async()=>{
-    console.log(await getToken())
+  const logToken=async()=>{
+    console.log(await getToken());
   }
+  
+   useEffect(() => {
+    if(user){
+      logToken()
+    }
+    
+  }, [user]);
+ 
 
   const value = {
     currency,

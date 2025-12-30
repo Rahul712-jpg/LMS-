@@ -1,7 +1,7 @@
 
 import mongoose from "mongoose";
-// import course from '../models/course.js'
-import Webhooks from '../controllers/webhooks.js'
+import course from '../models/course.js'
+import { clerkWebhooks} from '../controllers/webhooks.js'
 
 const purchaseSchema=new mongoose.Schema({
     courseId:{type:mongoose.Schema.Types.ObjectId,ref:'Course',required:true},
@@ -16,4 +16,6 @@ const purchaseSchema=new mongoose.Schema({
 
 },{timestamps:true});
 
- export const Purchase=mongoose.model('Purchase',PurchaseSchema)
+const Purchase = mongoose.model('Purchase', purchaseSchema);
+export default Purchase;
+
