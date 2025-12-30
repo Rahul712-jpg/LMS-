@@ -18,7 +18,7 @@ await connectDB()
 // await connectCloudinary()
 
 app.use(cors())
-// app.use(clerkMiddleware())
+app.use(clerkMiddleware())
 
 // test route
 app.get('/', (req, res) => res.send("API IS WORKING"))
