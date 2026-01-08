@@ -7,15 +7,15 @@ import connectCloudinary from './configs/cloudinary.js'
 
 import { clerkMiddleware } from '@clerk/express'
 
-// import educatorRouter from './route/educatorRoute.js'
-// import courseRouter from './route/courseRoute.js'
-// import userRouter from './route/userRoutes.js'
+import educatorRouter from './route/educatorRoute.js'
+import courseRouter from './route/courseRoute.js'
+import userRouter from './route/userRoutes.js'
 
-import {clerkWebhooks} from './controllers/webhooks.js'
+import {clerkWebhooks,stripeWebhooks} from './controllers/webhooks.js'
 const app = express()
 
 await connectDB()
-// await connectCloudinary()
+await connectCloudinary()
 
 app.use(cors())
 app.use(clerkMiddleware())
@@ -24,13 +24,13 @@ app.use(clerkMiddleware())
 app.get('/', (req, res) => res.send("API IS WORKING"))
 
 // routes
-// app.use('/api/educator', express.json(), educatorRouter)
-// app.use('/api/courses', express.json(), courseRouter)   // ✅ FIXED
-// app.use('/api/user', express.json(), userRouter)
+app.use('/api/educator', express.json(), educatorRouter)
+app.use('/api/courses', express.json(), courseRouter)   // ✅ FIXED
+app.use('/api/user', express.json(), userRouter)
 
 
 app.post('/clerk', express.json(), clerkWebhooks)
-// app.post('/stripe', express.json(), stripeWebhooks)
+app.post('/stripe', express.json(), stripeWebhooks)
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {

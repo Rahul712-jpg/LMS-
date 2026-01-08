@@ -25,8 +25,8 @@ export const clerkWebhooks = async (req, res) => {
           imageUrl: data.image_url,
         };
         await User.create(userData);
-        res.json({})
-        break;
+        res.json({});
+         break;
       }
 
       case "user.updated": {
@@ -56,67 +56,68 @@ export const clerkWebhooks = async (req, res) => {
   }
 }
 
-// const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// export const stripeWebhooks = async (request, response) => {
-//   const sig = request.headers["stripe-signature"];
-//   let event;
+export const stripeWebhooks = async (request, response) => {
+  const sig = request.headers["stripe-signature"];
+  let event;
 
-//   try {
-//     event = stripeInstance.webhooks.constructEvent(
-//       request.body,
-//       sig,
-//       process.env.STRIPE_WEBHOOK_SECRET
-//     );
-//   } catch (error) {
-//     return response.status(400).send(`Webhook error: ${error.message}`);
-//   }
+  try {
+    event = stripeInstance.webhooks.constructEvent(
+      request.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (error) {
+    return response.status(400).send(`Webhook error: ${error.message}`);
+  }
 
-//   switch (event.type) {
-//     case "payment_intent.succeeded": {
-//       const paymentIntent = event.data.object;
+  switch (event.type) {
+    case "payment_intent.succeeded": {
+      const paymentIntent = event.data.object;
+      const paymentIntentId=paymentIntent.id;
 
-//       const session = await stripeInstance.checkout.sessions.list({
-//         payment_intent: paymentIntent.id,
-//         limit: 1,
-//       });
+      const session = await stripeInstance.checkout.sessions.list({
+        payment_intent: paymentIntentId,
+        limit: 1,
+      });
 
-//       const { purchaseId } = session.data[0].metadata;
-//       const purchaseData = await Purchase.findById(purchaseId);
-//       const userData = await User.findById(purchaseData.user);
-//       const courseData = await Course.findById(purchaseData.course);
+      const { purchaseId } = session.data[0].metadata;
+      const purchaseData = await Purchase.findById(purchaseId);
+      const userData = await User.findById(purchaseData.user);
+      const courseData = await Course.findById(purchaseData.course);
 
-//       courseData.enrolledStudents.push(userData._id);
-//       await courseData.save();
+      courseData.enrolledStudents.push(userData._id);
+      await courseData.save();
 
-//       userData.enrolledCourses.push(courseData._id);
-//       await userData.save();
+      userData.enrolledCourses.push(courseData._id);
+      await userData.save();
 
-//       purchaseData.status = "completed";
-//       await purchaseData.save();
-//       break;
-//     }
+      purchaseData.status = "completed";
+      await purchaseData.save();
+      break;
+    }
 
-//     case "payment_intent.payment_failed": {
-//       const paymentIntent = event.data.object;
+    case "payment_intent.payment_failed": {
+      const paymentIntent = event.data.object;
 
-//       const session = await stripeInstance.checkout.sessions.list({
-//         payment_intent: paymentIntent.id,
-//         limit: 1,
-//       });
+      const session = await stripeInstance.checkout.sessions.list({
+        payment_intent: paymentIntent.id,
+        limit: 1,
+      });
 
-//       const { purchaseId } = session.data[0].metadata;
-//       const purchaseData = await Purchase.findById(purchaseId);
-//       purchaseData.status = "failed";
-//       await purchaseData.save();
-//       break;
-//     }
+      const { purchaseId } = session.data[0].metadata;
+      const purchaseData = await Purchase.findById(purchaseId);
+      purchaseData.status = "failed";
+      await purchaseData.save();
+      break;
+    }
 
-//     default:
-//       console.log(`Unhandled event type ${event.type}`);
-//   }
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
 
-//   response.json({ received: true });
-// };
-// }
+  response.json({ received: true });
+};
+
 
