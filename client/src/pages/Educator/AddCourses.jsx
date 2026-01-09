@@ -3,7 +3,7 @@ import uniqid from 'uniqid';
 import Quill from 'quill';
 import { assets } from '../../assets/assets';
 import { AppContext } from '../../context/AppContext';
-// import { useContext } from 'react';
+
 
 const AddCourses = () => {
   const quillRef = useRef(null);

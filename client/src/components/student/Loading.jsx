@@ -1,4 +1,4 @@
-import React, { use } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const Loading = () => {

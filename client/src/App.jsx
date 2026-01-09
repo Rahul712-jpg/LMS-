@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route, useMatch } from 'react-router-dom';
-import Navbar from './components/student/Navbar';
+import Navbar from './components/student/Navbar.jsx';
 
 import Home from './pages/student/Home';
 import CourseList from './pages/student/CourseList';
@@ -30,7 +30,6 @@ const App = () => {
     <div className='text-default min-h-screen bg-white'>
       <ToastContainer/>
       {!isEducatorRoute && <Navbar />}
-
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/course-list' element={<CourseList />} />

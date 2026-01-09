@@ -1,37 +1,52 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { assets, dummyDashboardData } from '../../assets/assets';
-import Loading from '../../components/student/Loading';
+import React, { useContext, useEffect, useState } from 'react'
+import axios from 'axios'
+import { AppContext } from '../../context/AppContext'
+import { assets } from '../../assets/assets'
+import Loading from '../../components/student/Loading'
+import { toast } from 'react-toastify'
+
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState(null);
-  const { currency, calculateCourseDuration,backenUrl,isEducator,getToken } = useContext(AppContext);
+  const [dashboardData, setDashboardData] = useState(null)
 
+  const {
+    currency,
+    calculateCourseDuration,
+    backendUrl,
+    isEducator,
+    getToken
+  } = useContext(AppContext)
 
-  const fetchDashboardData=async()=>{
-    try{
-      const token=await getToken()
-      const {data}=await axois.get(backendUrl + '/api/eductor/dashboard',{headers:{
-        Authorization :`Bearer ${token}`
-      }})
-      if(data.success){
+  const fetchDashboardData = async () => {
+    try {
+      const token = await getToken()
+
+      const { data } = await axios.get(
+        backendUrl + '/api/educator/dashboard',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      if (data.success) {
         setDashboardData(data.dashboardData)
-      }else{
+      } else {
         toast.error(data.message)
       }
-    }
-    catch(error){
-       toast.error(error.message)
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message)
     }
   }
-  useEffect(() => {
-  if(isEducator){
-    fetchDashboardData()
-  }
-    
-  }, [isEducator]);
 
-  if (!dashboardData) return <Loading />;
+  useEffect(() => {
+    if (isEducator) {
+      fetchDashboardData()
+    }
+  }, [isEducator])
+
+  if (!dashboardData) return <Loading />
 
   return (
     <div className='min-h-screen flex flex-col gap-8 p-4 md:p-8'>
@@ -61,60 +76,14 @@ const Dashboard = () => {
           <img src={assets.earning_icon} alt='' />
           <div>
             <p className='text-2xl font-medium text-gray-600'>
-              {currency}
-              {dashboardData.totalEarnings}
+              {currency}{dashboardData.totalEarnings}
             </p>
             <p className='text-gray-500'>Total Earnings</p>
           </div>
         </div>
       </div>
-
-      {/* Latest Enrollments */}
-      <div>
-        <h2 className='pb-4 text-lg font-medium'>Latest Enrollments</h2>
-
-        <div className='overflow-hidden rounded-md bg-white border'>
-          <table className='w-full text-left'>
-            <thead className='border-b text-sm text-gray-700'>
-              <tr>
-                <th className='px-4 py-3'>Student</th>
-                <th className='px-4 py-3'>Course</th>
-                <th className='px-4 py-3'>Duration</th>
-                <th className='px-4 py-3'>Status</th>
-              </tr>
-            </thead>
-
-            <tbody className='text-sm text-gray-500'>
-              {dashboardData.enrolledStudentsData.map((item, index) => (
-                <tr key={index} className='border-b'>
-                  <td className='px-4 py-3 flex items-center gap-3'>
-                    <img
-                      src={item.student.imageUrl}
-                      alt=''
-                      className='w-9 h-9 rounded-full'
-                    />
-                    <span>{item.student.name}</span>
-                  </td>
-
-                  <td className='px-4 py-3'>
-                    {item.course.courseTitle}
-                  </td>
-
-                  <td className='px-4 py-3'>
-                    {calculateCourseDuration(item.course)}
-                  </td>
-
-                  <td className='px-4 py-3 text-green-600'>
-                    Completed
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard

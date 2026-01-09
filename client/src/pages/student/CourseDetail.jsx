@@ -202,12 +202,17 @@ const CourseDetail = () => {
               ).toFixed(2)}
             </p>
 
-            <button onclick={enrollCourse }className="mt-4 w-full py-3 bg-blue-600 text-white rounded">
+            <button onclick={enrolledCourse}className="mt-4 w-full py-3 bg-blue-600 text-white rounded">
               {isAlreadyEnrolled ? 'Already Enrolled' : 'Enroll Now'}
             </button>
 
             <div className="pt-4 text-sm text-gray-500">
-              <p>⏱ {calculateCourseDuration(courseData)}</p>
+              <p>⏱ {calculateCourseDuration(courseData)}
+                <li>Lorem ipsum dolor sit amet.</li>
+                <li>Lorem ipsum dolor sit amet.</li>
+                <li>Lorem ipsum dolor sit amet.</li>
+                <li>Lorem ipsum dolor sit amet.</li>
+              </p>
               <p>📘 {calcuateNoOfLectures(courseData)} Lessons</p>
             </div>
           </div>
