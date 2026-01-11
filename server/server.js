@@ -1,39 +1,41 @@
-import express from 'express'
-import cors from 'cors'
-import 'dotenv/config'
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
 
-import connectDB from './configs/mongodb.js'
-import connectCloudinary from './configs/cloudinary.js'
+import connectDB from "./configs/mongodb.js";
+import connectCloudinary from "./configs/cloudinary.js";
 
-import { clerkMiddleware } from '@clerk/express'
+import { clerkMiddleware, requireAuth } from "@clerk/express";
 
-import educatorRouter from './route/educatorRoute.js'
-import courseRouter from './route/courseRoute.js'
-import userRouter from './route/userRoutes.js'
+import educatorRouter from "./route/educatorRoute.js";
+import courseRouter from "./route/courseRoute.js";
+import userRouter from "./route/userRoutes.js";
 
-import {clerkWebhooks,stripeWebhooks} from './controllers/webhooks.js'
-const app = express()
+import { clerkWebhooks, stripeWebhooks } from "./controllers/webhooks.js";
 
-await connectDB()
-await connectCloudinary()
+const app = express();
 
-app.use(cors())
-app.use(clerkMiddleware())
+// DB + services
+await connectDB();
+await connectCloudinary();
+
+// middlewares
+app.use(cors());
+app.use(clerkMiddleware()); // adds req.auth (optional auth)
 
 // test route
-app.get('/', (req, res) => res.send("API IS WORKING"))
+app.get("/", (req, res) => res.send("API IS WORKING"));
 
-// routes
-app.use('/api/educator', express.json(), educatorRouter)
-app.use('/api/courses', express.json(), courseRouter)   // ✅ FIXED
-app.use('/api/user', express.json(), userRouter)
+// routes (IMPORTANT FIXES)
+app.use("/api/educator", express.json(), requireAuth(), educatorRouter);
+app.use("/api/courses", express.json(), courseRouter); // public
+app.use("/api/user", express.json(), requireAuth(), userRouter);
 
+// webhooks (NO requireAuth here)
+app.post("/clerk", express.json(), clerkWebhooks);
+app.post("/stripe", express.json(), stripeWebhooks);
 
-app.post('/clerk', express.json(), clerkWebhooks)
-app.post('/stripe', express.json(), stripeWebhooks)
-
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server is running on PORT ${PORT}`)
-})
-
+  console.log(`Server is running on PORT ${PORT}`);
+});
