@@ -13,13 +13,19 @@ export const getUserData = async (req, res) => {
   try {
     const clerkId = req.auth.userId;
 
+    // 1️⃣ Get full user from Clerk
+    const clerkUser = await clerkClient.users.getUser(clerkId);
+
+    // 2️⃣ Find user in MongoDB
     let user = await User.findOne({ clerkId });
 
+    // 3️⃣ Create if not exists (WITH REAL DATA)
     if (!user) {
       user = await User.create({
         clerkId,
-        email: req.auth.sessionClaims?.email,
-        name: req.auth.sessionClaims?.name || "",
+        email: clerkUser.emailAddresses[0]?.emailAddress || "",
+        name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim(),
+        image: clerkUser.imageUrl || "",
         enrolledCourses: [],
       });
     }
