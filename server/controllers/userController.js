@@ -24,7 +24,7 @@ export const getUserData = async (req, res) => {
       user = await User.create({
         clerkId,
         email: clerkUser.emailAddresses[0]?.emailAddress || "",
-        name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim(),
+        name: `${clerkUser.firstName || "Great Stack"} ${clerkUser.lastName || ""}`.trim(),
         image: clerkUser.imageUrl || "",
         enrolledCourses: [],
       });
