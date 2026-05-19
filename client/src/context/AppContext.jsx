@@ -10,7 +10,7 @@ export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
   const backendUrl=import.meta.env.VITE_BACKEND_URL ;
-  console.log("BACKEND URL 👉", import.meta.env.VITE_BACKEND_URL);
+  // console.log("BACKEND URL 👉", import.meta.env.VITE_BACKEND_URL);
 
 
   const currency = import.meta.env.VITE_CURRENCY || '₹';

@@ -56,7 +56,7 @@ export const getEducatorCourses=async(req,res)=>{
 
 
         const educator=req.auth.userId;
-        const courses=await Course.find({educator})
+        const courses=await course.find({educator})
         const totalCourses=courses.length;
         const courseIds=courses.map(course=>course._id);
 

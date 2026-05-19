@@ -4,6 +4,7 @@ import Purchase from "../models/purchase.js";
 // import CourseProgress from "../models/courseProgress.js";
 import { EventTypeImportOpenApiIn } from "svix";
 import Stripe from "stripe";
+import { clerkClient } from "@clerk/express"
 
 /* -----------------------------------
    GET /user/data
@@ -11,13 +12,17 @@ import Stripe from "stripe";
 ----------------------------------- */
 export const getUserData = async (req, res) => {
   try {
+    console.log('req, res')
     const clerkId = req.auth.userId;
+    console.log('req, res1')
 
     // 1️⃣ Get full user from Clerk
     const clerkUser = await clerkClient.users.getUser(clerkId);
+    console.log('req, res2')
 
     // 2️⃣ Find user in MongoDB
     let user = await User.findOne({ clerkId });
+    console.log(JSON.stringify(user));
 
     // 3️⃣ Create if not exists (WITH REAL DATA)
     if (!user) {
@@ -29,7 +34,7 @@ export const getUserData = async (req, res) => {
         enrolledCourses: [],
       });
     }
-
+   
     res.json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

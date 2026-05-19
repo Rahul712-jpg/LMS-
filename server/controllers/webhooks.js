@@ -18,33 +18,33 @@ export const clerkWebhooks = async (req, res) => {
 
     switch (type) {
       case "user.created": {
-        const userData = {
-          _id: data.id,
-          email: data.email_addresses[0].email_address,
-          name: `${data.first_name} ${data.last_name}`,
-          imageUrl: data.image_url,
-        };
-        await User.create(userData);
-        res.json({});
-         break;
-      }
+  await User.create({
+    clerkId: data.id,
+    email: data.email_addresses?.[0]?.email_address || "",
+    name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+    image: data.image_url || "",
+  });
+  break;
+}
 
-      case "user.updated": {
-        const userData = {
-          email: data.email_addresses[0].email_address,
-          name: `${data.first_name} ${data.last_name}`,
-          imageUrl: data.image_url,
-        };
-        await User.findByIdAndUpdate(data.id, userData);
-        res.json({})
-        break;
-      }
+case "user.updated": {
+  await User.findOneAndUpdate(
+    { clerkId: data.id },
+    {
+      email: data.email_addresses?.[0]?.email_address || "",
+      name: `${data.first_name || ""} ${data.last_name || ""}`.trim(),
+      image: data.image_url || "",
+    },
+    { upsert: true }
+  );
+  break;
+}
 
-      case "user.deleted": {
-        await User.findByIdAndDelete(data.id);
-        res.json({})
-        break;
-      }
+case "user.deleted": {
+  await User.findOneAndDelete({ clerkId: data.id });
+  break;
+}
+
 
       default:
         break;

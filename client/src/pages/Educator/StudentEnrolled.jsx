@@ -1,34 +1,40 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { dummyStudentEnrolled } from '../../assets/assets';
 import { AppContext } from '../../context/AppContext';
 import Loading from '../../components/student/Loading';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const StudentEnrolled = () => {
   const [enrolledStudents, setEnrolledStudents] = useState(null);
-  const { calculateCourseDuration } = useContext(AppContext);
-  const [backendUrl,getToken,isEducator]=useContext(AppContext);
 
-  const fecthEnrolledCourses=async()=>{
-    try{
-      const token=await getToken()
-      const {data}=await axois.get(backendUrl + '/api/eductor/enrolled-students',{headers:{
-        Authorization :`Bearer ${token}`
-      }})
-      if(data.success){
-        setEnrolledStudents(data.enrolledStudents.reverse())
-      }else{
-        toast.error(data.message)
+  const { backendUrl, getToken, isEducator } = useContext(AppContext);
+
+  const fecthEnrolledCourses = async () => {
+    try {
+      const token = await getToken();
+
+      const { data } = await axios.get(
+        backendUrl + '/api/educator/enrolled-students',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (data.success) {
+        setEnrolledStudents(data.enrolledStudents?.reverse() || []);
+      } else {
+        toast.error(data.message);
       }
+    } catch (error) {
+      toast.error(error.message);
     }
-    catch(error){
-       toast.error(error.message)
-    }
-  }
-
+  };
 
   useEffect(() => {
-    if(isEducator){
-      fecthEnrolledCourses()
+    if (isEducator) {
+      fecthEnrolledCourses();
     }
   }, [isEducator]);
 
@@ -54,15 +60,15 @@ const StudentEnrolled = () => {
 
                 <td className='px-4 py-3 flex items-center gap-3'>
                   <img
-                    src={item.student.imageUrl}
+                    src={item.student?.imageUrl}
                     alt='Profile'
                     className='w-9 h-9 rounded-full'
                   />
-                  <span>{item.student.name}</span>
+                  <span>{item.student?.name}</span>
                 </td>
 
                 <td className='px-4 py-3'>
-                  {item.course.courseTitle}
+                  {item.course?.courseTitle}
                 </td>
 
                 <td className='px-4 py-3 hidden sm:table-cell'>

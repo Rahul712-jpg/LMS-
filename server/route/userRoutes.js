@@ -4,8 +4,9 @@ import { updateUserCourseProgress } from '../controllers/userController.js';
 
 
 const userRouter=express.Router();
-
+console.log('hello')
 userRouter.get('/data', getUserData)
+
 userRouter.get('/enrolled-courses' ,UserEnrolledCourses)
 userRouter.post('/purchase' ,purchaseCourse)
 userRouter.post('/update-course-progress' ,updateUserCourseProgress)

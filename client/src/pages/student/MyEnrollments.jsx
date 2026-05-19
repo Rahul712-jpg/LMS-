@@ -44,7 +44,7 @@ const MyEnrollment = () => {
   }
   useEffect(()=>{
     if(userData){
-      fetchUserEnrolledCourses();
+      fetchUserEnrolledCourses;
     }
   },[userData]);
   useEffect(()=>{

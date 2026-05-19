@@ -17,7 +17,7 @@ const app = express();
 
 // DB + services
 await connectDB();
-await connectCloudinary();
+connectCloudinary();
 
 // middlewares
 app.use(cors());
