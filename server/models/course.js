@@ -11,12 +11,12 @@ const lectureSchema=new mongoose.Schema({
     lectureOrder:{type:Number,required:true},
 },{_id:false});
 
-const chapterSchema=new mongoose.Schema({
-    chaperId:{type:String,required:true},
-    chaterOrder:{type:Number,required:true},
-    chaterTitle:{type:String,required:true},
-    chaterContent:[lectureSchema],
-},{_id:false});
+const chapterSchema = new mongoose.Schema({
+    chapterId: { type: String, required: true },
+    chapterOrder: { type: Number, required: true },
+    chapterTitle: { type: String, required: true },
+    chapterContent: [lectureSchema],
+}, { _id: false });
 
 const courseSchema=new mongoose.Schema({
     courseTitle:{type:String,required:true},

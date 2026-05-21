@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 import course from '../models/course.js'
 import { clerkWebhooks} from '../controllers/webhooks.js'

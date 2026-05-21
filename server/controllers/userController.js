@@ -12,13 +12,12 @@ import { clerkClient } from "@clerk/express"
 ----------------------------------- */
 export const getUserData = async (req, res) => {
   try {
-    console.log('req, res')
+   
     const clerkId = req.auth.userId;
-    console.log('req, res1')
-
+   
     // 1️⃣ Get full user from Clerk
     const clerkUser = await clerkClient.users.getUser(clerkId);
-    console.log('req, res2')
+    
 
     // 2️⃣ Find user in MongoDB
     let user = await User.findOne({ clerkId });

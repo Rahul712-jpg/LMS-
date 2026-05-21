@@ -3,8 +3,8 @@ import uniqid from 'uniqid';
 import Quill from 'quill';
 import { assets } from '../../assets/assets';
 import { AppContext } from '../../context/AppContext';
-
-
+import { toast } from 'react-toastify';
+import axios from 'axios';
 const AddCourses = () => {
   const quillRef = useRef(null);
   const editorRef = useRef(null);
@@ -123,48 +123,59 @@ const AddCourses = () => {
     setShowPopup(false);
   };
 
-  const handleSubmit = async(e) => {
-    try{
+  const handleSubmit = async (e) => {
+  try {
     e.preventDefault();
-     if(!image){
-      toast.error('Thumnail Not Selected')
 
-     }
-    const courseData={
+    if (!image) {
+      toast.error('Thumbnail Not Selected');
+      return;
+    }
+
+    const courseData = {
       courseTitle,
-      courseDescription:quillRef.current.root.innerHTML,
-      coursePrice:Number(coursePrice),
-      discount:Number(discount),
-      courseContent:chapters,
-    }
-     const formData=new FormData()
-     formData.append('courseData',JSON.stringify(courseData))
-     formData.append('image',image)
+      courseDescription: quillRef.current.root.innerHTML,
+      coursePrice: Number(coursePrice),
+      discount: Number(discount),
+      courseContent: chapters,
+    };
 
-     const token=await getToken()
-     const {data}=await axois.post(backendUrl+'/api/educator/add-course',formData,{
-      headers:{
-        Authorization:`Bearer ${token}`
+    const formData = new FormData();
+
+    formData.append('courseData', JSON.stringify(courseData));
+    formData.append('image', image);
+
+    const token = await getToken();
+
+    const { data } = await axios.post(
+      backendUrl + '/api/educator/add-course',
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
+    );
 
-     })
-     if(data.success){
-      toast.success(data.message)
-      setCourseTitle('')
-      setCoursePrice(0)
-      setDiscount(0)
-      setImage(null)
-      quillRef.current.root.innerHTMl=""
+    if (data.success) {
+      toast.success(data.message);
 
-     }else{
-      toast.error(data.message)
-     }
+      setCourseTitle('');
+      setCoursePrice(0);
+      setDiscount(0);
+      setImage(null);
+      setChapters([]);
 
-    }catch(error){
-      toast.message(error.message)
+      quillRef.current.root.innerHTML = '';
+    } else {
+      toast.error(data.message);
     }
-    
-  };
+  } catch (error) {
+    toast.error(
+      error.response?.data?.message || error.message
+    );
+  }
+};
 
   return (
     <div className="h-screen overflow-scroll p-4 md:p-8">
