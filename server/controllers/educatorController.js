@@ -18,6 +18,7 @@ export  const updateRoleToEducator=async(req,res)=>{
 
 export const addCourse  =async(req,res)=>{
     try{
+        console.log('add course called')
        const {courseData}=req.body
        const imageFile=req.file
        const educatorId=req.auth.userId
@@ -25,13 +26,14 @@ export const addCourse  =async(req,res)=>{
             return res.json({success:false,message:" thumnail is Not Attached"})
         }
         const parsedCourseData=await JSON.parse(courseData)
-        parsedCourseData.edcuator=educatorId
+        parsedCourseData.educator=educatorId
         const newCourse=await course.create(parsedCourseData)
         const imageUpload=await cloudinary.uploader.upload(imageFile.path)
         newCourse.courseThumbnail=imageUpload.secure_url
         await newCourse.save()
+        
 
-        res.json({success:true,message:"Course Addes",data:newCourse})
+        res.json({success:true,message:"Course Added",data:newCourse})
     }catch(error){
          res.json({success:false,message:error.message})
         }
@@ -41,7 +43,7 @@ export const addCourse  =async(req,res)=>{
 export const getEducatorCourses=async(req,res)=>{
     try{
         const educator=req.auth.userId
-        const courses=await Course.find({educator})
+        const courses=await course.find({educator})
         res.json({success:true,courses})
 
     }catch(error){
@@ -93,16 +95,16 @@ export const getEducatorCourses=async(req,res)=>{
  }
 }
 
-// get enrolld sutent data
+// get enrolld student data
 
  export const getEnrolledStudents=async(req,res)=>{
     try{
         const educator=req.auth.userId;
-        const courses=await Course.find({educator});
+        const courses=await course.find({educator});
         const courseIds=courses.map(course=>course._id);
 
         const purchases=await Purchase.find({
-            course:{$in:courseIds},
+            courseId:{$in:courseIds},
             status:'completed'}).populate('userId','name imageUrl ').populate('courseId','courseTitle')
 
             const enrolledStudents=purchases.map(purchase=>({

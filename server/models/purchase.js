@@ -3,7 +3,7 @@ import course from '../models/course.js'
 import { clerkWebhooks} from '../controllers/webhooks.js'
 
 const purchaseSchema=new mongoose.Schema({
-    courseId:{type:mongoose.Schema.Types.ObjectId,ref:'Course',required:true},
+    courseId:{type:mongoose.Schema.Types.ObjectId,ref:'course',required:true},
 
        userId:{
         type:String,
