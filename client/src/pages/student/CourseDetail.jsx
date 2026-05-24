@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 const CourseDetail = () => {
 
-  const { id } = useParams();
+  const { courseId } = useParams();
 
   const [courseData, setCourseData] = useState(null);
 
@@ -42,7 +42,7 @@ const CourseDetail = () => {
     try {
 
       const { data } = await axios.get(
-        backendUrl + '/api/courses/' + id
+        backendUrl + '/api/courses/' + courseId
       );
 
       if (data.success) {
