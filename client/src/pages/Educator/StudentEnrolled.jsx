@@ -9,7 +9,7 @@ const StudentEnrolled = () => {
 
   const { backendUrl, getToken, isEducator } = useContext(AppContext);
 
-  const fecthEnrolledCourses = async () => {
+  const fetchEnrolledCourses = async () => {
     try {
       const token = await getToken();
 
@@ -34,7 +34,7 @@ const StudentEnrolled = () => {
 
   useEffect(() => {
     if (isEducator) {
-      fecthEnrolledCourses();
+      fetchEnrolledCourses();
     }
   }, [isEducator]);
 

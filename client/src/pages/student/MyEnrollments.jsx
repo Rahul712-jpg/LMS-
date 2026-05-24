@@ -6,7 +6,7 @@ import { assets } from '../../assets/assets';
 import { Line } from 'rc-progress';
 import Footer from '../../components/student/Footer';
 import { useNavigate } from 'react-router-dom';
-import axois from 'axios';
+import axios from 'axios';
 import { toast } from 'react-toastify'; 
 
 
@@ -21,7 +21,7 @@ const MyEnrollment = () => {
     try{
       const token=await getToken();
       const tempProgressArray=await Promise.all(enrolledCourses.map(async(course)=>{
-        const {data}=await axois.post(backendUrl + `/api/user/get-course-progress`,{courseId:
+        const {data}=await axios.post(backendUrl + `/api/user/get-course-progress`,{courseId:
           course._id},{
           headers:{
             Authorization:`Bearer ${token}`
@@ -44,7 +44,7 @@ const MyEnrollment = () => {
   }
   useEffect(()=>{
     if(userData){
-      fetchUserEnrolledCourses;
+      fetchUserEnrolledCourses();
     }
   },[userData]);
   useEffect(()=>{

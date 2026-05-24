@@ -20,7 +20,7 @@ export const AppContextProvider = ({ children }) => {
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [userData, setuserData] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   // ================= FETCH ALL COURSES =================
 
@@ -69,7 +69,7 @@ export const AppContextProvider = ({ children }) => {
       );
 
       if (data.success) {
-        setuserData(data.user);
+        setUserData(data.user);
       } else {
         toast.error(data.message);
       }
@@ -210,7 +210,7 @@ export const AppContextProvider = ({ children }) => {
     enrolledCourses,
     backendUrl,
     userData,
-    setuserData,
+    setUserData,
     getToken,
     fetchAllCourses,
     navigate,

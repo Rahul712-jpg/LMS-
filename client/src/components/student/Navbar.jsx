@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { assets } from '../../assets/assets';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
-import axois from 'axios';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 // import{Course}
 
@@ -28,7 +28,7 @@ const Navbar = () => {
         return
       }
       const token=await getToken();
-      const {data}=await axois.get(backendUrl + '/api/educator/update-role',{
+      const {data}=await axios.get(backendUrl + '/api/educator/update-role',{
         headers:{
           Authorization:`Bearer ${token}`
         }})

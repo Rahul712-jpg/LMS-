@@ -8,7 +8,7 @@ const Footer = () => {
         <div className='flex items-center gap-4'>
           <img  className='hidden md:block w-20'src={assets.logo} alt="logo" />
           <div className='hidden md:block h-7 w-px bg-gray-500/60'></div>
-          <p className='py-4 text-center text-sm md:text-sm text-white/60'>Copyright @2025 Great Stack .All rigt reserved</p>
+          <p className='py-4 text-center text-sm md:text-sm text-white/60'>Copyright © 2025 Great Stack. All rights reserved</p>
         </div>
         <div className='flex items-center gap-3 max-md:mt-4'>
           <a href="#"><img src={assets.facebook_icon} alt="facebook_icon" /></a>
