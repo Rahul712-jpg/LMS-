@@ -44,8 +44,6 @@ case "user.deleted": {
   await User.findOneAndDelete({ clerkId: data.id });
   break;
 }
-
-
       default:
         break;
     }
@@ -85,7 +83,7 @@ export const stripeWebhooks = async (request, response) => {
       const { purchaseId } = session.data[0].metadata;
       const purchaseData = await Purchase.findById(purchaseId);
       const userData = await User.findById(purchaseData.user);
-      const courseData = await Course.findById(purchaseData.course);
+      const courseData = await course.findById(purchaseData.course);
 
       courseData.enrolledStudents.push(userData._id);
       await courseData.save();

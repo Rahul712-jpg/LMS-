@@ -8,6 +8,7 @@ import Footer from '../../components/student/Footer';
 
 const CourseList = () => {
   const { allCourses } = useContext(AppContext);
+  console.log('All Courses 👉', allCourses);
   const { input } = useParams();
   const navigate = useNavigate();
 

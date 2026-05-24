@@ -13,7 +13,7 @@ educatorRouter.post('/add-course',upload.single('image'),protectEducator ,addCou
 
 educatorRouter.get('/courses',protectEducator,getEducatorCourses);
 educatorRouter.get('/dashboard',protectEducator,eduactorDashboardData);
-educatorRouter.get('/enrolled-students',protectEducator,get);
+educatorRouter.get('/enrolled-students',protectEducator,getEnrolledStudents);
 
 
 

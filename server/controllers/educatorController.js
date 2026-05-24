@@ -1,120 +1,294 @@
-import { clerkClient } from "@clerk/express"
-import course from "../models/course.js"
-import { v2 as cloudinary } from "cloudinary"
-import  Purchase  from "../models/purchase.js"
-import User from '../models/User.js'
+import { clerkClient } from "@clerk/express";
+import course from "../models/course.js";
+import { v2 as cloudinary } from "cloudinary";
+import Purchase from "../models/purchase.js";
+import User from "../models/User.js";
 
-export  const updateRoleToEducator=async(req,res)=>{
-    try{
-       const userId=req.auth.userId
-       await clerkClient.users.updateUserMetadata(userId,{publicMetadata :
-        {role:'educator',}
-    })
-    res.json({success:true,message:"You can Publish a courses now"})
-}catch(error){
-   res.json({success:false,message:error.message})
+/* =========================================
+   UPDATE ROLE TO EDUCATOR
+========================================= */
+
+export const updateRoleToEducator = async (req, res) => {
+
+    try {
+
+        const userId = req.auth.userId;
+
+        await clerkClient.users.updateUserMetadata(userId, {
+            publicMetadata: {
+                role: "educator",
+            },
+        });
+
+        res.json({
+            success: true,
+            message: "You can publish courses now",
+        });
+
+    } catch (error) {
+
+        res.json({
+            success: false,
+            message: error.message,
+        });
+
     }
-}
+};
 
-export const addCourse  =async(req,res)=>{
-    try{
-        console.log('add course called')
-       const {courseData}=req.body
-       const imageFile=req.file
-       const educatorId=req.auth.userId
-         if(!imageFile){    
-            return res.json({success:false,message:" thumnail is Not Attached"})
+/* =========================================
+   ADD COURSE
+========================================= */
+
+export const addCourse = async (req, res) => {
+
+    try {
+
+        console.log("Add Course Called");
+
+        const { courseData } = req.body;
+
+        const imageFile = req.file;
+
+        if (!imageFile) {
+
+            return res.json({
+                success: false,
+                message: "Thumbnail is not attached",
+            });
+
         }
-        const parsedCourseData=await JSON.parse(courseData)
-        parsedCourseData.educator=educatorId
-        const newCourse=await course.create(parsedCourseData)
-        const imageUpload=await cloudinary.uploader.upload(imageFile.path)
-        newCourse.courseThumbnail=imageUpload.secure_url
-        await newCourse.save()
-        
 
-        res.json({success:true,message:"Course Added",data:newCourse})
-    }catch(error){
-         res.json({success:false,message:error.message})
+        // Find MongoDB user from Clerk ID
+        const user = await User.findOne({
+            clerkId: req.auth.userId,
+        });
+
+        if (!user) {
+
+            return res.json({
+                success: false,
+                message: "User not found",
+            });
+
         }
+
+        // Parse course data
+        const parsedCourseData = JSON.parse(courseData);
+
+        // Store MongoDB ObjectId
+        parsedCourseData.educator = user._id;
+
+        // Create course
+        const newCourse = await course.create(parsedCourseData);
+
+        // Upload thumbnail
+        const imageUpload = await cloudinary.uploader.upload(
+            imageFile.path
+        );
+
+        // Save thumbnail URL
+        newCourse.courseThumbnail = imageUpload.secure_url;
+
+        await newCourse.save();
+
+        res.json({
+            success: true,
+            message: "Course Added",
+            data: newCourse,
+        });
+
+    } catch (error) {
+
+        res.json({
+            success: false,
+            message: error.message,
+        });
+
     }
+};
 
-//  get educator courses
-export const getEducatorCourses=async(req,res)=>{
-    try{
-        const educator=req.auth.userId
-        const courses=await course.find({educator})
-        res.json({success:true,courses})
+/* =========================================
+   GET EDUCATOR COURSES
+========================================= */
 
-    }catch(error){
-       res.json({success:false,message:error.message})
+export const getEducatorCourses = async (req, res) => {
+
+    try {
+
+        const user = await User.findOne({
+            clerkId: req.auth.userId,
+        });
+
+        if (!user) {
+
+            return res.json({
+                success: false,
+                message: "User not found",
+            });
+
+        }
+
+        const courses = await course.find({
+            educator: user._id,
+        });
+
+        res.json({
+            success: true,
+            courses,
+        });
+
+    } catch (error) {
+
+        res.json({
+            success: false,
+            message: error.message,
+        });
+
     }
-}
+};
 
-// Get educator dahborad data
+/* =========================================
+   EDUCATOR DASHBOARD DATA
+========================================= */
 
- export const eduactorDashboardData=async(req,res)=>{
-    try{
+export const eduactorDashboardData = async (req, res) => {
 
+    try {
 
-        const educator=req.auth.userId;
-        const courses=await course.find({educator})
-        const totalCourses=courses.length;
-        const courseIds=courses.map(course=>course._id);
+        // Find MongoDB user
+        const user = await User.findOne({
+            clerkId: req.auth.userId,
+        });
 
-        const purchases=await Purchase.find({
-            course:{$in:courseIds},
-            status:'completed'
+        if (!user) {
 
-        })
-        const totalEarnings=purchases.reduce((sum, purchase)=>sum + purchase.amount,0);
+            return res.json({
+                success: false,
+                message: "User not found",
+            });
 
-        const enrolledStudentsData=[];
-        for(const course of courses){
-            const students=await User.find({
-                _id:{$in:course.enrolledStudents}
-            },'name imageUrl');
+        }
 
-            students.forEach(student=>{
+        // Get educator courses
+        const courses = await course.find({
+            educator: user._id,
+        });
+
+        const totalCourses = courses.length;
+
+        const courseIds = courses.map(
+            (course) => course._id
+        );
+
+        // Get purchases
+        const purchases = await Purchase.find({
+            courseId: { $in: courseIds },
+            status: "completed",
+        });
+
+        // Total earnings
+        const totalEarnings = purchases.reduce(
+            (sum, purchase) => sum + purchase.amount,
+            0
+        );
+
+        // Students data
+        const enrolledStudentsData = [];
+
+        for (const item of courses) {
+
+            const students = await User.find({
+                _id: { $in: item.enrolledStudents },
+            }).select("name image");
+
+            students.forEach((student) => {
+
                 enrolledStudentsData.push({
-                    courseTitle:course.courseTitle,
-                    student
+                    courseTitle: item.courseTitle,
+                    student,
                 });
+
             });
         }
-        res.json({success:true,dashboardData:{
-            totalEarnings,enrolledStudentsData ,totalCourses
 
-        }})
-            
-            
+        res.json({
+            success: true,
+            dashboardData: {
+                totalEarnings,
+                enrolledStudentsData,
+                totalCourses,
+            },
+        });
 
- }catch(error){
-    res.json({success:false,message:error.message})
+    } catch (error) {
 
- }
-}
+        res.json({
+            success: false,
+            message: error.message,
+        });
 
-// get enrolld student data
-
- export const getEnrolledStudents=async(req,res)=>{
-    try{
-        const educator=req.auth.userId;
-        const courses=await course.find({educator});
-        const courseIds=courses.map(course=>course._id);
-
-        const purchases=await Purchase.find({
-            courseId:{$in:courseIds},
-            status:'completed'}).populate('userId','name imageUrl ').populate('courseId','courseTitle')
-
-            const enrolledStudents=purchases.map(purchase=>({
-                student:purchase.userId,
-                courseTitle:purchase.courseId.courseTitle,
-                purchaseDate:purchase.createdAt,
-            }));
-
-            res.json({success:true,enrolledStudents})
-    }catch(error){
-       res.json({success:false,message:error.message})
     }
- }
+};
+
+/* =========================================
+   GET ENROLLED STUDENTS
+========================================= */
+
+export const getEnrolledStudents = async (req, res) => {
+
+    try {
+
+        // Find Mongo user
+        const user = await User.findOne({
+            clerkId: req.auth.userId,
+        });
+
+        if (!user) {
+
+            return res.json({
+                success: false,
+                message: "User not found",
+            });
+
+        }
+
+        // Get educator courses
+        const courses = await course.find({
+            educator: user._id,
+        });
+
+        const courseIds = courses.map(
+            (course) => course._id
+        );
+
+        // Purchases
+        const purchases = await Purchase.find({
+            courseId: { $in: courseIds },
+            status: "completed",
+        })
+            .populate("userId", "name image")
+            .populate("courseId", "courseTitle");
+
+        // Format response
+        const enrolledStudents = purchases.map(
+            (purchase) => ({
+                student: purchase.userId,
+                courseTitle: purchase.courseId.courseTitle,
+                purchaseDate: purchase.createdAt,
+            })
+        );
+
+        res.json({
+            success: true,
+            enrolledStudents,
+        });
+
+    } catch (error) {
+
+        res.json({
+            success: false,
+            message: error.message,
+        });
+
+    }
+};

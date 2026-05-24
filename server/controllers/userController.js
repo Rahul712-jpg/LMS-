@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import Course from "../models/course.js";
+import course from "../models/course.js";
 import Purchase from "../models/purchase.js";
 // import CourseProgress from "../models/courseProgress.js";
 import { EventTypeImportOpenApiIn } from "svix";
@@ -72,19 +72,19 @@ export const purchaseCourse = async (req, res) => {
     const { origin } = req.headers;
 
     const user = await User.findOne({ clerkId });
-    const course = await Course.findById(courseId);
+    const courseData = await course.findById(courseId);
 
-    if (!user || !course) {
+    if (!user || !courseData) {
       return res.json({ success: false, message: "Invalid user or course" });
     }
 
     const amount =
-      course.coursePrice -
-      (course.discount * course.coursePrice) / 100;
+      courseData.coursePrice -
+      (courseData.discount * courseData.coursePrice) / 100;
 
     const purchase = await Purchase.create({
       userId: user._id,
-      courseId: course._id,
+      courseId: courseData._id,
       amount,
     });
 
@@ -99,7 +99,7 @@ export const purchaseCourse = async (req, res) => {
         {
           price_data: {
             currency: (process.env.CURRENCY || "usd").toLowerCase(),
-            product_data: { name: course.courseTitle },
+            product_data: { name: courseData.courseTitle },
             unit_amount: Math.round(amount * 100),
           },
           quantity: 1,
@@ -184,7 +184,7 @@ export const addUserRating = async (req, res) => {
     }
 
     const user = await User.findOne({ clerkId });
-    const course = await Course.findById(courseId);
+    const course = await course.findById(courseId);
 
     if (!user || !course) {
       return res.json({ success: false, message: "Invalid user or course" });
@@ -197,17 +197,17 @@ export const addUserRating = async (req, res) => {
       });
     }
 
-    const existing = course.courseRatings.find(
+    const existing = courseData.courseRatings.find(
       (r) => r.userId.toString() === user._id.toString()
     );
 
     if (existing) {
       existing.rating = rating;
     } else {
-      course.courseRatings.push({ userId: user._id, rating });
+      courseData.courseRatings.push({ userId: user._id, rating });
     }
 
-    await course.save();
+    await courseData.save();
 
     res.json({ success: true, message: "Rating added" });
   } catch (error) {
